@@ -11,13 +11,25 @@ class ProductsTest extends TestCase
 {
     use RefreshDatabase;
 
+    private $user;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->user = factory(User::class)->create([
+            'email' => 'admin@admin.com',
+            'password' => bcrypt('password123')
+        ]);
+    }
+
     public function test_homepage_contains_empty_products_table()
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->login_user();
+        // $user = $this->create_user();
 
-        $response = $this->actingAs($user)->get('/');
+        $response = $this->actingAs($this->user)->get('/');
 
         $response->assertStatus(200);
 
@@ -28,14 +40,14 @@ class ProductsTest extends TestCase
     {
         $this->withoutExceptionHandling();
 
-        $user = $this->login_user();
+        // $user = $this->create_user();
 
         $product = Product::create([
             'name' => 'Product1',
             'price' => 99.99
         ]);
 
-        $response = $this->actingAs($user)->get('/');
+        $response = $this->actingAs($this->user)->get('/');
 
         $response->assertStatus(200);
 
@@ -50,22 +62,20 @@ class ProductsTest extends TestCase
 
     public function test_paginated_products_table_doesnt_show_11th_record()
     {
-        $user = $this->login_user();
+        // $user = $this->create_user();
 
-        $response = $this->actingAs($user)->get('/');
+        $response = $this->actingAs($this->user)->get('/');
 
         $products = factory(Product::class, 11)->create();
 
         $response->assertDontSee($products->last()->name);
     }
 
-    private function login_user()
-    {
-        $user = factory(User::class)->create([
-            'email' => 'admin@admin.com',
-            'password' => bcrypt('password123')
-        ]);
-
-        return $user;
-    }
+    // private function create_user()
+    // {
+    //     return factory(User::class)->create([
+    //         'email' => 'admin@admin.com',
+    //         'password' => bcrypt('password123')
+    //     ]);
+    // }
 }
