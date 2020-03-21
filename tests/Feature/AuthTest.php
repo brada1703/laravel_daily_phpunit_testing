@@ -37,9 +37,12 @@ class AuthTest extends TestCase
         $response->assertStatus(200);
     }
 
-    // public function test_unauthenticated_user_cannot_access_products_table()
-    // {
-    //     // Go to homepage
-    //     // Assert status 503
-    // }
+    public function test_unauthenticated_user_cannot_access_products_table()
+    {
+        $response = $this->get('/home');
+
+        $response->assertStatus(302);
+
+        $response->assertRedirect('/login');
+    }
 }
