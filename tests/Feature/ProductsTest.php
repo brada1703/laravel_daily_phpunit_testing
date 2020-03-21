@@ -42,4 +42,15 @@ class ProductsTest extends TestCase
 
         $this->assertEquals($product->name, $view_products->first()->name);
     }
+
+    public function test_paginated_products_table_doesnt_show_11th_record()
+    {
+        $products = factory(Product::class, 11)->create();
+
+        info($products);
+
+        $response = $this->get('/');
+
+        $response->assertDontSee($products->last()->name);
+    }
 }
